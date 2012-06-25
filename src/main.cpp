@@ -54,8 +54,11 @@ void accept_new_connections(inet_stream_server& srvsock)
 
 int main(int argc, char** argv)
 {
+
 	try {
 		inet_stream_server srvsock("0.0.0.0",argv[1],IPv4);
+
+		daemon(0,0);
 
 		accept_new_connections(srvsock);
 
