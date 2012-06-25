@@ -4,24 +4,27 @@
 # include "exception.hpp"
 # include <thread>
 # include <unistd.h>
+# include <string>
+# include <stdlib.h>
 
 using libsocket::inet_stream_server;
 using libsocket::inet_stream;
 using libsocket::socket_exception;
 
+std::string head =
+"HTTP/1.1 503 Service Unavailable\n"
+"Server: 503srv\n"
+"Connection: close\n"
+"Content-Length: 187\n\n"; // FIXME: Adapt this if you change the error message
+
+std::string body =
+"<html>\n<head><title>503 Service Unavailable</title></head>\n<body>\n<h1>503 Service Temporarily Unavailable</h1>\nDue to a downtime, this service is temporarily unavailable.\n</body>\n</html>\n";
+
 void process_connection(inet_stream* clsock)
 {
 	try {
-		*clsock << "HTTP/1.1 503 Service Unavailable\n";
-		*clsock << "Server: 503srv\n";
-		*clsock << "Content-Length: 186\n\n";
-		*clsock << "<html>\n\
-<head><title>503 Service Unavailable</title></head>\n\
-<body>\n\
-<h1>503 Service Temporarily Unavailable</h1>\n\
-Due to a downtime, this service is temporarily unavailable.\n\
-</body>\n\
-</html>\n";
+		*clsock << head << body;
+
 		std::this_thread::sleep_for(std::chrono::milliseconds(150)); // Necessary to transmit the full message
 		clsock->destroy();
 	} catch (socket_exception exc)
