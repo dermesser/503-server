@@ -6,6 +6,7 @@
 # include <unistd.h>
 # include <string>
 # include <stdlib.h>
+# include <time.h>
 
 using libsocket::inet_stream_server;
 using libsocket::inet_stream;
@@ -20,9 +21,25 @@ std::string head =
 std::string body =
 "<html>\n<head><title>503 Service Unavailable</title></head>\n<body>\n<h1>503 Service Temporarily Unavailable</h1>\nDue to a downtime, this service is temporarily unavailable.\n</body>\n</html>\n";
 
-void process_connection(inet_stream* clsock)
+void process_connection(inet_stream* clsock,std::ofstream* logfile)
 {
+	time_t epoch_time;
+	char* timebuf = new char[26];
+
 	try {
+
+		{
+			epoch_time = time(0);
+
+			ctime_r(&epoch_time,timebuf);
+
+			timebuf[24] = 0;
+
+			*logfile << timebuf << " Client: " << clsock->gethost().c_str() << ":" << clsock->getport().c_str() << "\n";
+
+			logfile->flush();
+		}
+
 		*clsock << head << body;
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(150)); // Necessary to transmit the full message
@@ -30,19 +47,24 @@ void process_connection(inet_stream* clsock)
 	} catch (socket_exception exc)
 	{
 		std::cerr << exc.mesg;
+		delete[] timebuf;
 	}
+
+	delete[] timebuf;
 }
 
 void accept_new_connections(inet_stream_server& srvsock)
 {
 	inet_stream* clsock;
 
+	std::ofstream logfile("503srv.log");
+
 	while ( 1 )
 	{
 		try {
 			clsock = srvsock.accept();
 
-			std::thread worker(process_connection,clsock);
+			std::thread worker(process_connection,clsock,&logfile);
 			worker.detach();
 
 		} catch (socket_exception exc)
@@ -58,7 +80,7 @@ int main(int argc, char** argv)
 	try {
 		inet_stream_server srvsock("0.0.0.0",argv[1],IPv4);
 
-		daemon(0,0);
+		daemon(1,0);
 
 		accept_new_connections(srvsock);
 
