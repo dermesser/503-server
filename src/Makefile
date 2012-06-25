@@ -3,10 +3,10 @@
 OBJECTS=main.o
 
 .cpp.o:
-	g++ -std=gnu++11 -Wall -g -c -DVERBOSE $<
+	g++ -std=gnu++11 -Wall -c -DVERBOSE $<
 
 .c.o:
-	gcc -Wall -g -c -DVERBOSE $<
+	gcc -Wall -c -DVERBOSE $<
 
 all: subdirs $(OBJECTS)
 	g++ -std=gnu++11 -o ../503srv $(OBJECTS) socket/*.o -lpthread
