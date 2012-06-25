@@ -12,7 +12,18 @@ using libsocket::socket_exception;
 void process_connection(inet_stream* clsock)
 {
 	try {
-		*clsock << "Hello World!\n";
+		*clsock << "HTTP/1.1 503 Service Unavailable\n";
+		*clsock << "Server: 503srv\n";
+		*clsock << "Content-Length: 186\n\n";
+		*clsock << "<html>\n\
+<head><title>503 service unavailable</title></head>\n\
+<body>\n\
+<h1>503 service temporarily unavailable</h1>\n\
+due to a downtime, this server is temporarily unavailable.\n\
+</body>\n\
+</html>\n";
+		std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+		clsock->destroy();
 	} catch (socket_exception exc)
 	{
 		std::cerr << exc.mesg;
@@ -23,15 +34,18 @@ void accept_new_connections(inet_stream_server& srvsock)
 {
 	inet_stream* clsock;
 
-	try {
-		clsock = srvsock.accept();
-
-		std::thread worker(process_connection,clsock);
-		worker.join();
-
-	} catch (socket_exception exc)
+	while ( 1 )
 	{
-		std::cerr << exc.mesg;
+		try {
+			clsock = srvsock.accept();
+
+			std::thread worker(process_connection,clsock);
+			worker.detach();
+
+		} catch (socket_exception exc)
+		{
+			std::cerr << exc.mesg;
+		}
 	}
 }
 
@@ -39,7 +53,7 @@ int main(int argc, char** argv)
 {
 	try {
 		inet_stream_server srvsock("0.0.0.0",argv[1],IPv4);
-	
+
 		accept_new_connections(srvsock);
 
 		srvsock.destroy();
@@ -48,6 +62,6 @@ int main(int argc, char** argv)
 	{
 		std::cerr << exc.mesg;
 	}
-	
+
 	return 0;
 }
