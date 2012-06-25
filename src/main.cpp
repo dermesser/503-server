@@ -12,10 +12,10 @@ using libsocket::inet_stream;
 using libsocket::socket_exception;
 
 std::string head =
-"HTTP/1.1 503 Service Unavailable\n"
-"Server: 503srv\n"
-"Connection: close\n"
-"Content-Length: 187\n\n"; // FIXME: Adapt this if you change the error message
+"HTTP/1.1 503 Service Unavailable\x0d\x0a"
+"Server: 503srv\x0d\x0a"
+"Connection: close\x0d\x0a"
+"Content-Length: 187\x0d\x0a\x0d\x0a"; // FIXME: Adapt this if you change the error message
 
 std::string body =
 "<html>\n<head><title>503 Service Unavailable</title></head>\n<body>\n<h1>503 Service Temporarily Unavailable</h1>\nDue to a downtime, this service is temporarily unavailable.\n</body>\n</html>\n";
