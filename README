@@ -16,6 +16,12 @@ Some stuff you should know to use this server:
 this value.
 * Of course, you may change the error message. But then you also have to change the value of the Content-Length HTTP field in the message!
 * 503-server goes to background (daemon) immediately after starting up.
+* 503-server logs to the file $PWD/503srv.log using a format like this:
+
+Mon Jun 25 09:42:13 2012 Client: localhost:47696
+Mon Jun 25 09:42:13 2012 Client: localhost:47697
+Mon Jun 25 09:42:13 2012 Client: localhost:47698
+Mon Jun 25 09:42:13 2012 Client: localhost:47699
 
 To start the server, type the following:
 
