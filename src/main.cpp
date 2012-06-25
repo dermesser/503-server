@@ -16,13 +16,13 @@ void process_connection(inet_stream* clsock)
 		*clsock << "Server: 503srv\n";
 		*clsock << "Content-Length: 186\n\n";
 		*clsock << "<html>\n\
-<head><title>503 service unavailable</title></head>\n\
+<head><title>503 Service Unavailable</title></head>\n\
 <body>\n\
-<h1>503 service temporarily unavailable</h1>\n\
-due to a downtime, this server is temporarily unavailable.\n\
+<h1>503 Service Temporarily Unavailable</h1>\n\
+Due to a downtime, this service is temporarily unavailable.\n\
 </body>\n\
 </html>\n";
-		std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+		std::this_thread::sleep_for(std::chrono::milliseconds(150)); // Necessary to transmit the full message
 		clsock->destroy();
 	} catch (socket_exception exc)
 	{
