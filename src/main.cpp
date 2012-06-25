@@ -5,21 +5,46 @@
 # include <thread>
 # include <unistd.h>
 
-int main(int argc, char** argv)
-{
-	using libsocket::inet_stream_server;
+using libsocket::inet_stream_server;
+using libsocket::inet_stream;
+using libsocket::socket_exception;
 
-	libsocket::inet_stream* clsock;
+void process_connection(inet_stream* clsock)
+{
+	try {
+		*clsock << "Hello World!\n";
+	} catch (socket_exception exc)
+	{
+		std::cerr << exc.mesg;
+	}
+}
+
+void accept_new_connections(inet_stream_server& srvsock)
+{
+	inet_stream* clsock;
 
 	try {
-		inet_stream_server srvsock("0.0.0.0","8081",IPv4);
-	
 		clsock = srvsock.accept();
 
-		*clsock << "Hello World!\n";
+		std::thread worker(process_connection,clsock);
+		worker.join();
+
+	} catch (socket_exception exc)
+	{
+		std::cerr << exc.mesg;
+	}
+}
+
+int main(int argc, char** argv)
+{
+	try {
+		inet_stream_server srvsock("0.0.0.0",argv[1],IPv4);
+	
+		accept_new_connections(srvsock);
+
 		srvsock.destroy();
 
-	} catch (libsocket::socket_exception exc)
+	} catch (socket_exception exc)
 	{
 		std::cerr << exc.mesg;
 	}
