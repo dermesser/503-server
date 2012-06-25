@@ -27,7 +27,6 @@ void process_connection(inet_stream* clsock,std::ofstream* logfile)
 	char* timebuf = new char[26];
 
 	try {
-
 		{
 			epoch_time = time(0);
 
@@ -43,6 +42,7 @@ void process_connection(inet_stream* clsock,std::ofstream* logfile)
 		*clsock << head << body;
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(150)); // Necessary to transmit the full message
+
 		clsock->destroy();
 	} catch (socket_exception exc)
 	{
