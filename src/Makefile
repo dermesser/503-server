@@ -9,7 +9,7 @@ OBJECTS=main.o
 	gcc -Wall -g -c -DVERBOSE $<
 
 all: subdirs $(OBJECTS)
-	g++ -std=gnu++11 -o ../503srv $(OBJECTS) socket/*.o socket/*.c
+	g++ -std=gnu++11 -o ../503srv $(OBJECTS) socket/*.o
 
 subdirs:
 	cd socket; make
