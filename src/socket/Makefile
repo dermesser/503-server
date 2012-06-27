@@ -1,10 +1,13 @@
 .SUFFIXES: .cpp .o .c
 
+CPLPL=g++
+CC=gcc
+
 .cpp.o:
-	g++ -Wall -c -DVERBOSE $<
+	$(CPLPL) -std=gnu++11 -Wall -c -DVERBOSE $<
 
 .c.o:
-	gcc -Wall -c -DVERBOSE $<
+	$(CC) -Wall -c -DVERBOSE $<
 
 MODS=exception.o  inetbase.o  inetclientstream.o  inetserverstream.o  socket.o  streamclient.o libinetsocket.o
 

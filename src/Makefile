@@ -1,18 +1,21 @@
 .SUFFIXES: .cpp .c .o
 
+CPLPL=g++
+CC=gcc
+
 OBJECTS=main.o
 
 .cpp.o:
-	g++ -std=gnu++11 -Wall -c -DVERBOSE $<
+	$(CPLPL) -std=gnu++11 -Wall -c -DVERBOSE $<
 
 .c.o:
-	gcc -Wall -c -DVERBOSE $<
+	$(CC) -Wall -c -DVERBOSE $<
 
 all: subdirs $(OBJECTS)
-	g++ -std=gnu++11 -o ../503srv $(OBJECTS) socket/*.o -lpthread
+	$(CPLPL) -std=gnu++11 -o ../503srv $(OBJECTS) socket/*.o -lpthread
 
 subdirs:
 	cd socket; make
 
 clean:
-	rm */*.o
+	rm *.o */*.o
