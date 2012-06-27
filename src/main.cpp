@@ -43,7 +43,7 @@ void process_connection(inet_stream* clsock,std::ofstream* logfile)
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(150)); // Necessary to transmit the full message
 
-		clsock->destroy();
+		delete clsock;
 	} catch (socket_exception exc)
 	{
 		std::cerr << exc.mesg;
