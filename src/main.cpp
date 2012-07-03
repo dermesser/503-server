@@ -3,6 +3,7 @@
 # include "inetserverstream.hpp"
 # include "exception.hpp"
 # include <thread>
+# include <mutex>
 # include <unistd.h>
 # include <string>
 # include <stdlib.h>
@@ -21,12 +22,15 @@ std::string head =
 std::string body =
 "<html>\n<head><title>503 Service Unavailable</title></head>\n<body>\n<h1>503 Service Temporarily Unavailable</h1>\nDue to a downtime, this service is temporarily unavailable.\n</body>\n</html>\n";
 
+std::mutex logfile_mutex;
+
 void process_connection(inet_stream* clsock,std::ofstream* logfile)
 {
 	time_t epoch_time;
 	char* timebuf = new char[26];
 
 	try {
+		logfile_mutex.lock();
 		{
 			epoch_time = time(0);
 
@@ -38,6 +42,7 @@ void process_connection(inet_stream* clsock,std::ofstream* logfile)
 
 			logfile->flush();
 		}
+		logfile_mutex.unlock();
 
 		*clsock << head << body;
 
@@ -46,6 +51,7 @@ void process_connection(inet_stream* clsock,std::ofstream* logfile)
 		delete clsock;
 	} catch (socket_exception exc)
 	{
+		logfile_mutex.unlock();
 		std::cerr << exc.mesg;
 		delete[] timebuf;
 	}
