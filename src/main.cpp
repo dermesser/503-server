@@ -30,7 +30,6 @@ void process_connection(inet_stream* clsock,std::ofstream* logfile)
 	char* timebuf = new char[26];
 
 	try {
-		logfile_mutex.lock();
 		{
 			epoch_time = time(0);
 
@@ -38,11 +37,12 @@ void process_connection(inet_stream* clsock,std::ofstream* logfile)
 
 			timebuf[24] = 0;
 
-			*logfile << timebuf << " Client: " << clsock->gethost().c_str() << ":" << clsock->getport().c_str() << "\n";
+			logfile_mutex.lock();
+				*logfile << timebuf << " Client: " << clsock->gethost().c_str() << ":" << clsock->getport().c_str() << "\n";
+			logfile_mutex.unlock();
 
 			logfile->flush();
 		}
-		logfile_mutex.unlock();
 
 		*clsock << head << body;
 
@@ -84,7 +84,7 @@ int main(int argc, char** argv)
 {
 
 	try {
-		inet_stream_server srvsock("0.0.0.0",argv[1],IPv4);
+		inet_stream_server srvsock("::",argv[1],IPv6);
 
 		daemon(1,0);
 
