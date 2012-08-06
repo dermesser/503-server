@@ -37,11 +37,9 @@ void process_connection(inet_stream* clsock,std::ofstream* logfile)
 
 			timebuf[24] = 0;
 
-			logfile_mutex.lock();
+			std::unique_lock<std::mutex> log_out;
 				*logfile << timebuf << " Client: " << clsock->gethost().c_str() << ":" << clsock->getport().c_str() << "\n";
-			logfile_mutex.unlock();
-
-			logfile->flush();
+				logfile->flush();
 		}
 
 		*clsock << head << body;
@@ -51,7 +49,6 @@ void process_connection(inet_stream* clsock,std::ofstream* logfile)
 		delete clsock;
 	} catch (socket_exception exc)
 	{
-		logfile_mutex.unlock();
 		std::cerr << exc.mesg;
 		delete[] timebuf;
 	}
