@@ -79,9 +79,10 @@ void accept_new_connections(inet_stream_server& srvsock)
 
 int main(int argc, char** argv)
 {
+    setup_httpdata();
 
 	try {
-		inet_stream_server srvsock("::",argv[1],IPv6);
+		inet_stream_server srvsock("::",argv[1],LIBSOCKET_IPv6); // If we bind to v6 ::, we get IPv4 connections too on most Linux systems (net.ipv6.bindv6only)
 
 		daemon(1,0);
 

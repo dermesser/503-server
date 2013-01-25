@@ -15,7 +15,8 @@ all: subdirs $(OBJECTS)
 	$(CPLPL) -std=gnu++11 -o ../build/503srv ../build/*.o -lpthread
 
 subdirs:
-	cd socket; make
+	cd socket; \
+	$(MAKE)
 
 clean:
 	rm ../build/*
