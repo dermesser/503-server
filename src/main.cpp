@@ -1,28 +1,50 @@
 # include <iostream>
 # include <fstream>
-# include "inetserverstream.hpp"
-# include "exception.hpp"
+# include "socket/inetserverstream.hpp"
+# include "socket/exception.hpp"
 # include <thread>
 # include <mutex>
 # include <unistd.h>
 # include <string>
 # include <stdlib.h>
 # include <time.h>
+# include <sstream>
 
 using libsocket::inet_stream_server;
 using libsocket::inet_stream;
 using libsocket::socket_exception;
+using std::string;
 
-std::string head =
+static std::mutex logfile_mutex;
+static string http_output;
+
+void setup_httpdata(void)
+{
+    string header =
 "HTTP/1.1 503 Service Unavailable\x0d\x0a"
 "Server: 503srv\x0d\x0a"
 "Connection: close\x0d\x0a"
-"Content-Length: 187\x0d\x0a\x0d\x0a"; // FIXME: Adapt this if you change the error message
+"Content-Length: ";
 
-std::string body =
-"<html>\n<head><title>503 Service Unavailable</title></head>\n<body>\n<h1>503 Service Temporarily Unavailable</h1>\nDue to a downtime, this service is temporarily unavailable.\n</body>\n</html>\n";
+    string body =
+"<html>\n"
+"    <head>\n"
+"	<title>503 Service Unavailable</title>\n"
+"    </head>\n"
+"   <body>\n"
+"	<h1>503 Service Temporarily Unavailable</h1>\n"
+"	    This HTTP service is unfortunately temporarily unavailable :(\n"
+"	    Maybe you want to come back later...\n"
+"    </body>\n"
+"</html>\n";
 
-std::mutex logfile_mutex;
+    std::ostringstream full_body_stream;
+
+    full_body_stream << header << body.length() << "\x0d\x0a\x0d\x0a" << body;
+
+    http_output = full_body_stream.str();
+
+}
 
 void process_connection(inet_stream* clsock,std::ofstream* logfile)
 {
@@ -38,13 +60,14 @@ void process_connection(inet_stream* clsock,std::ofstream* logfile)
 			timebuf[24] = 0;
 
 			std::unique_lock<std::mutex> log_out(logfile_mutex);
-				*logfile << timebuf << " Client: " << clsock->gethost().c_str() << ":" << clsock->getport().c_str() << "\n";
-				logfile->flush();
+
+			*logfile << timebuf << " Client: " << clsock->gethost().c_str() << ":" << clsock->getport().c_str() << "\n";
+			logfile->flush();
 		}
 
-		*clsock << head << body;
+		*clsock << http_output;
 
-		std::this_thread::sleep_for(std::chrono::milliseconds(150)); // Necessary to transmit the full message
+		std::this_thread::sleep_for(std::chrono::milliseconds(300)); // apparently necessary for correct delivery
 
 		delete clsock;
 	} catch (socket_exception exc)
