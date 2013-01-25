@@ -2,12 +2,6 @@
 # include <string>
 # include <string.h>
 
-# include "../libinetsocket.h"
-# include "../socket.hpp"
-# include "../inetbase.hpp"
-# include "../exception.hpp"
-# include "../streamclient.hpp"
-
 # include <unistd.h>
 # include <sys/socket.h>
 # include <sys/types.h>
@@ -44,26 +38,13 @@ POSSIBILITY OF SUCH DAMAGE.
  * 	The I/O abilities are inherited from stream_client_socket.
  */
 
+# include "libinetsocket.h"
+# include "exception.hpp"
+# include "inetclientstream.hpp"
+
 namespace libsocket
 {
 	using std::string;
-
-/**************** inet_stream class (TCP inet sockets) *********/
-
-	class inet_stream : public inet_socket, public stream_client_socket
-	{
-		public:
-
-		inet_stream(void);
-		inet_stream(const char* dsthost, const char* dstport, int proto_osi3, int flags=0); // flags: socket()
-		inet_stream(const string& dsthost, const string& dstport, int proto_osi3, int flags=0);
-
-		// connect() == setup()
-		void connect(const char* dsthost, const char* dstport, int proto_osi3, int flags=0); // flags: socket()
-		void shutdown(int method);
-
-		friend class inet_stream_server; // So it's possible for inet_stream_server::accept() to construct an instance with given fd
-	};
 
 	inet_stream::inet_stream(void)
 	{
@@ -92,14 +73,14 @@ namespace libsocket
 		host = dsthost;
 		port = dstport;
 		proto = proto_osi3;
+
+		// New file descriptor, therefore reset shutdown flags
+		shut_rd = false;
+		shut_wr = false;
 	}
 
-
-	void inet_stream::shutdown(int method)
+	void inet_stream::connect(const string& dsthost, const string& dstport, int proto_osi3, int flags)
 	{
-		if ( 0 > shutdown_inet_stream_socket(sfd,method))
-		{
-			throw socket_exception(__FILE__,__LINE__,"inet_stream::shutdown() - Could not shutdown socket\n");
-		}
+		connect(dsthost.c_str(),dstport.c_str(),proto_osi3,flags);
 	}
 }

@@ -1,8 +1,9 @@
-# ifndef SOCKET
-# define SOCKET
+# ifndef _INETBASE_H
+# define _INETBASE_H
 
-# include <sys/socket.h>
-# include <sys/types.h>
+# include <string>
+# include "socket.hpp"
+# include "libinetsocket.h"
 /*
 The committers of the libsocket project, all rights reserved
 (c) 2012, dermesser <lbo@spheniscida.de>
@@ -27,18 +28,22 @@ POSSIBILITY OF SUCH DAMAGE.
 
 namespace libsocket
 {
-	class socket
+	using std::string;
+
+	class inet_socket : public virtual socket
 	{
 		protected:
-		int sfd;
+		string host;
+		string port;
+		int proto;
 
 		public:
 
-		virtual ~socket();
+		inet_socket();
 
-		virtual void destroy(void);
-
-		int getfd(void) const;
+		string gethost(void) const;
+		string getport(void) const;
 	};
 }
-#endif
+
+# endif

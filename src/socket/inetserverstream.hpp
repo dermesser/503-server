@@ -1,8 +1,9 @@
-# ifndef INETBASE
-# define INETBASE
-# include <string>
-# include "socket.hpp"
-# include "libinetsocket.h"
+# ifndef _INETSERVERSTREAM_H
+# define _INETSERVERSTREAM_H
+
+# include "inetbase.hpp"
+# include "inetclientstream.hpp"
+
 /*
 The committers of the libsocket project, all rights reserved
 (c) 2012, dermesser <lbo@spheniscida.de>
@@ -27,21 +28,24 @@ POSSIBILITY OF SUCH DAMAGE.
 
 namespace libsocket
 {
-	using std::string;
-
-	class inet_socket : public virtual socket
+	class inet_stream_server : public inet_socket
 	{
-		protected:
-		int proto;
-		string host;
-		string port;
+		private:
+		bool nonblock;
 
 		public:
 
-		inet_socket();
+		inet_stream_server(void);
+		inet_stream_server(const char* bindhost, const char* bindport, int proto_osi3, int flags=0);
+		inet_stream_server(const string& bindhost, const string& bindport, int proto_osi3, int flags=0);
 
-		string gethost(void) const;
-		string getport(void) const;
+		void setup(const char* bindhost, const char* bindport, int proto_osi3, int flags=0);
+		void setup(const string& bindhost, const string& bindport, int proto_osi3, int flags=0);
+
+		inet_stream* accept(int numeric=0,int accept_flags=0);
+
+		string getbindhost(void);
+		string getbindport(void);
 	};
 }
 

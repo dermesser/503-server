@@ -1,13 +1,8 @@
-# ifndef INETSERVERSOCKET
-# define INETSERVERSOCKET
+# ifndef _SOCKET_H
+# define _SOCKET_H
 
-# include "inetbase.hpp"
-# include "inetclientstream.hpp"
-
-# define IPv4 3
-# define IPv6 4
-
-# define BOTH 5 // what fits best (TCP/UDP or IPv4/6)
+# include <sys/socket.h>
+# include <sys/types.h>
 /*
 The committers of the libsocket project, all rights reserved
 (c) 2012, dermesser <lbo@spheniscida.de>
@@ -32,24 +27,20 @@ POSSIBILITY OF SUCH DAMAGE.
 
 namespace libsocket
 {
-	class inet_stream_server : public inet_socket
+	class socket
 	{
-		private:
-		bool listening;
-		bool nonblock;
+		protected:
+		int sfd;
 
 		public:
 
-		inet_stream_server(void);
-		inet_stream_server(const char* bindhost, const char* bindport, int proto_osi3, int flags=0);
+		socket();
 
-		void setup(const char* bindhost, const char* bindport, int proto_osi3, int flags=0);
+		virtual ~socket();
 
-		inet_stream* accept(int numeric=0,int accept_flags=0);
+		virtual int destroy(void);
 
-		string getbindhost(void);
-		string getbindport(void);
+		int getfd(void) const;
 	};
 }
-
-# endif
+#endif

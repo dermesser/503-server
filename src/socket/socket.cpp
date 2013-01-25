@@ -29,23 +29,10 @@ POSSIBILITY OF SUCH DAMAGE.
  * 	class graph.
  */
 
+# include "socket.hpp"
+
 namespace libsocket
 {
-	class socket
-	{
-		protected:
-		int sfd;
-
-		public:
-
-		socket();
-		virtual ~socket();
-
-	 	virtual int destroy(void);
-
-		int getfd(void) const;
-	};
-
 	socket::socket() : sfd(-1) {}
 
 	socket::~socket(void)
