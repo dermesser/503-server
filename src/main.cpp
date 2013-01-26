@@ -9,6 +9,7 @@
 # include <stdlib.h>
 # include <time.h>
 # include <sstream>
+# include <cstring>
 
 using libsocket::inet_stream_server;
 using libsocket::inet_stream;
@@ -18,6 +19,9 @@ using std::string;
 static std::mutex logfile_mutex;
 static string http_output;
 
+const char* logfilename = 0;
+const char* ht_body_filename = 0;
+
 void setup_httpdata(void)
 {
     string header =
@@ -26,7 +30,11 @@ void setup_httpdata(void)
 "Connection: close\x0d\x0a"
 "Content-Length: ";
 
-    string body =
+    string body;
+
+    if ( ht_body_filename == 0 )
+    {
+	body =
 "<html>\n"
 "    <head>\n"
 "	<title>503 Service Unavailable</title>\n"
@@ -37,6 +45,32 @@ void setup_httpdata(void)
 "	    Maybe you want to come back later...\n"
 "    </body>\n"
 "</html>\n";
+    } else
+    {
+	std::ifstream user_content(ht_body_filename);
+
+	if ( !user_content.good() )
+	{
+	    std::ofstream errorfile("503ERR",std::ios_base::out|std::ios_base::app);
+
+	    errorfile << "Could not open custom HTTP body file " << ht_body_filename << "; exited\n";
+
+	    errorfile.close();
+
+	    exit(1);
+	}
+
+	char buf[128];
+
+	while ( ! user_content.eof() )
+	{
+	    std::memset(buf,0,128);
+	    user_content.get(buf,128,0);
+	    body.append(buf,128);
+	}
+
+	user_content.close();
+    }
 
     std::ostringstream full_body_stream;
 
@@ -83,7 +117,15 @@ void accept_new_connections(inet_stream_server& srvsock)
 {
 	inet_stream* clsock;
 
-	std::ofstream logfile("503srv.log");
+	std::ofstream logfile(logfilename,std::ios_base::out|std::ios_base::app);
+
+	if ( ! logfile.good() )
+	{
+	    std::ofstream errorfile("503ERR",std::ios_base::out|std::ios_base::app);
+	    errorfile << "Could not open logfile " << logfilename << " for writing! Exited without doing anything\n";
+	    errorfile.close();
+	    exit(1);
+	}
 
 	while ( 1 )
 	{
@@ -102,10 +144,26 @@ void accept_new_connections(inet_stream_server& srvsock)
 
 int main(int argc, char** argv)
 {
+    char arg;
+
+    while ( 0 < (arg = getopt(argc,argv,"f:l:")) )
+    {
+	switch (arg)
+	{
+	    case 'f': ht_body_filename = optarg;
+		      break;
+	    case 'l': logfilename = optarg;
+		      break;
+	}
+    }
+
+    if ( logfilename == 0 )
+	logfilename = "503srv.log";
+
     setup_httpdata();
 
 	try {
-		inet_stream_server srvsock("::",argv[1],LIBSOCKET_IPv6); // If we bind to v6 ::, we get IPv4 connections too on most Linux systems (net.ipv6.bindv6only)
+		inet_stream_server srvsock("::",argv[optind],LIBSOCKET_IPv6); // If we bind to v6 ::, we get IPv4 connections too on most Linux systems (net.ipv6.bindv6only)
 
 		daemon(1,0);
 
