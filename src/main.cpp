@@ -108,6 +108,7 @@ void process_connection(inet_stream* clsock,std::ofstream* logfile)
 	{
 		std::cerr << exc.mesg;
 		delete[] timebuf;
+		return;
 	}
 
 	delete[] timebuf;
