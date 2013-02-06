@@ -146,6 +146,7 @@ void accept_new_connections(inet_stream_server& srvsock)
 int main(int argc, char** argv)
 {
     char arg;
+    pid_t pid;
 
     while ( 0 < (arg = getopt(argc,argv,"f:l:")) )
     {
@@ -166,7 +167,14 @@ int main(int argc, char** argv)
 	try {
 		inet_stream_server srvsock("::",argv[optind],LIBSOCKET_IPv6); // If we bind to v6 ::, we get IPv4 connections too on most Linux systems (net.ipv6.bindv6only)
 
-		daemon(1,0);
+		close(0);
+		close(1);
+		close(2);
+
+		pid = fork();
+
+		if ( pid != 0 )
+		    exit(0);
 
 		accept_new_connections(srvsock);
 
