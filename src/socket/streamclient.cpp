@@ -77,14 +77,20 @@ namespace libsocket
 		memset(buffer,0,dest.size());
 
 		if ( sock.sfd == -1 )
+		{
+			delete[] buffer;
 			throw socket_exception(__FILE__,__LINE__,">>(std::string) input: Socket not connected!\n");
+		}
 
 		if ( -1 == (read_bytes = read(sock.sfd,buffer,dest.size())) )
+		{
+			delete[] buffer;
 			throw socket_exception(__FILE__,__LINE__,">>(std::string) input: Error while reading!\n");
+		}
 
 		if ( read_bytes < static_cast<ssize_t>(dest.size()) )
 			dest.resize(read_bytes); // So the client doesn't print content more than one time
-						 // and it can check if the string's length is 0 (end of transmission)
+		// and it can check if the string's length is 0 (end of transmission)
 
 		dest.assign(buffer,read_bytes);
 
