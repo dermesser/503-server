@@ -165,7 +165,7 @@ int main(int argc, char** argv)
     setup_httpdata();
 
 	try {
-		inet_stream_server srvsock("::",argv[optind],LIBSOCKET_IPv6); // If we bind to v6 ::, we get IPv4 connections too on most Linux systems (net.ipv6.bindv6only)
+		inet_stream_server srvsock("10.0.2.78",argv[optind],LIBSOCKET_IPv4); // If we bind to v6 ::, we get IPv4 connections too on most Linux systems (net.ipv6.bindv6only)
 
 		close(0);
 		close(1);

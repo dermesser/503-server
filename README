@@ -12,7 +12,7 @@ uses the libpthread-based C++11 threads to serve the connections.
 Some stuff you should know to use this server:
 
 * Use `make [all]` to build the program. The binary will be build/503srv. You'll need a C++11-compliant compiler (or at least C++0x).
-    -> You may use the -j flag to speed up the build process on SMP systems
+-> You may use the -j flag to speed up the build process on SMP systems
 * The server's threads wait by default 300 milliseconds before terminating to ensure that the content has been delivered. You may tune
 this value.
 * 503-server goes to background (daemon) immediately after starting up.
@@ -33,7 +33,25 @@ e.g.
 
 There are some command line options:
 
-    -f [file]	use [file] as web page
-    -l [file]	use [file] as log file
+-f [file]	use [file] as web page
+-l [file]	use [file] as log file
 
 [1] http://git.spheniscida.de/?p=libsocket.git;a=summary
+
+LICENSING
+**********
+
+Copyright (C) 2012, 2013 lbo <lbo@spheniscida.de>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
