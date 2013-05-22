@@ -5,11 +5,14 @@ CC=gcc
 CFLAGS=-D_MIXED
 
 .cpp.o:
-	$(CPLPL) $(CFLAGS) -o ../../build/$@ -std=gnu++11 -Wall -c -DVERBOSE $<
+	$(CPLPL) $(CFLAGS) -o $@ -std=gnu++11 -Wall -c -DVERBOSE $<
 
 .c.o:
-	$(CC) -o ../../build/$@ -Wall -c -DVERBOSE $<
+	$(CC) -o $@ -Wall -c -DVERBOSE $<
 
 MODS=exception.o  inetbase.o  inetclientstream.o  inetserverstream.o  socket.o  streamclient.o libinetsocket.o
 
 all: $(MODS)
+
+clean :
+	rm -f *.o

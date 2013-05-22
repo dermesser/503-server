@@ -7,17 +7,19 @@ CFLAGS=-g
 OBJECTS=main.o
 
 .cpp.o:
-	$(CPLPL) $(CFLAGS) -o ../build/$@ -std=gnu++11 -Wall -c -DVERBOSE $<
+	$(CPLPL) $(CFLAGS) -o $@ -std=gnu++11 -Wall -c -DVERBOSE $<
 
 .c.o:
-	$(CC) $(CFLAGS) -o ../build/$@ -Wall -c -DVERBOSE $<
+	$(CC) $(CFLAGS) -o $@ -Wall -c -DVERBOSE $<
 
 all: subdirs $(OBJECTS)
-	$(CPLPL) -std=gnu++11 -o ../build/503srv ../build/*.o -lpthread
+	$(CPLPL) -std=gnu++11 -o ../build/503srv $(OBJECTS) socket/*.o -lpthread
 
 subdirs:
 	cd socket; \
 	$(MAKE)
 
 clean:
-	rm ../build/*
+	rm -f $(OBJECTS); \
+	cd socket; \
+	$(MAKE) clean
