@@ -13,7 +13,7 @@ OBJECTS=main.o
 	$(CC) $(CFLAGS) -o $@ -Wall -c -DVERBOSE $<
 
 all: subdirs $(OBJECTS)
-	$(CPLPL) -std=gnu++11 -o ../build/503srv $(OBJECTS) socket/*.o -lpthread
+	$(CPLPL) -std=gnu++11 -o ../build/503srv $(OBJECTS) socket/503socket.a -lpthread
 
 subdirs:
 	cd socket; \
