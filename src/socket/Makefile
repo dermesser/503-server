@@ -12,7 +12,9 @@ CFLAGS=-D_MIXED
 
 MODS=exception.o  inetbase.o  inetclientstream.o  inetserverstream.o  socket.o  streamclient.o libinetsocket.o
 
-all: $(MODS)
+all : 503socket.a
+
+503socket.a : $(MODS)
 	ar rs 503socket.a $(MODS)
 
 clean :
